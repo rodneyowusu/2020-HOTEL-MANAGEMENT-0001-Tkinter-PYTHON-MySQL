@@ -1,10 +1,33 @@
 from tkinter import *
 from PIL import ImageTk , Image
 from tkinter import messagebox
+import mysql.connector
 
 #cd desktop/PYTHONTEAM/PYTHON-PROJECT
 global root
 root = Tk()
+
+# CREATING DATABASE .
+# mb=mysql.connector.connect(
+# host="localhost",
+# user="root",
+# password="Nana#773_9z",
+# database="hotel"
+# )
+# my_cursor = mb.cursor()
+# my_cursor.execute("CREATE DATABASE Hotel")
+# my_cursor.close()
+
+
+mb=mysql.connector.connect(
+host="localhost",
+user="root",
+password="Nana#773_9z",
+database="hotel"
+)
+my_cursor = mb.cursor()
+mb.commit()
+mb.close()
 
 class HOMEPAGE:
     def __init__ (self , master):
@@ -63,19 +86,54 @@ class loginWindow(HOMEPAGE):
         self.loginframe = Frame(self.master , width = 1000 , bg = "#fce4ec",  height = 400 , relief = 'ridge' , bd = 2)
         self.loginframe.place(x=150 , y=120)
 
-        self.fieldsUsername = AnyName(self.loginframe ,"./IMAGE/username-icon.jpg" , "Username : " ,50 , 50 , 350 , 70 , "NULL")
+        def logincheck():
+            usernamevalue = self.UserNameEntry.get()
+            passwordvalue =self.PasswordNameEntry.get()
+            n = 2
+            mb=mysql.connector.connect(
+            host="localhost",
+            user="root",
+            password="Nana#773_9z",
+            database="hotel"
+            )
+            my_cursor = mb.cursor()
+            my_cursor.execute("select *from user_details")
+            records=my_cursor.fetchall()
+            # print(records)
+            for record in records:
+                if usernamevalue == record[1] and passwordvalue == record[5]:
+                    messagebox.showinfo("CORRECT" , "LOGIN SUCCESSFUL")
+                    break
+
+            else:
+                messagebox.showwarning("ERROR!" , "INCORRECT USERNAME OR PASSWORD")
+                
+
+            mb.commit()
+            mb.close()
+            master.destroy()
 
 
-        self.fieldspassword = AnyName(self.loginframe ,"./IMAGE/passwordImage.png" , "Password  : " ,50 , 120 , 350 , 140 , "*")
+
+        u_name = StringVar()
+        self.fieldsUsername = AnyName(self.loginframe ,"./IMAGE/username-icon.jpg" , "Username : " ,50 , 50 )
+        self.UserNameEntry = Entry(self.loginframe ,textvariable = u_name , width = 50  , bd = 2 , font = ('Arial' , 14 , "italic" )  )
+        self.UserNameEntry.place(x = 350 , y = 70)
+
+
+
+        u_password = StringVar()
+        self.fieldspassword = AnyName(self.loginframe ,"./IMAGE/passwordImage.png" , "Password : " ,50 , 120 )
+        self.PasswordNameEntry = Entry(self.loginframe ,textvariable = u_password , width = 50  , bd = 2 , font = ('Arial' , 14 , "italic" ) , show = "*")
+        self.PasswordNameEntry.place(x = 350 , y = 140)
 
         self.Submit_image = ImageTk.PhotoImage(Image.open("./IMAGE/Submit.jpg"))
-        self.SubmitButton = Button(self.loginframe , image=self.Submit_image , border = 0  , command = self.thehompage)
+        self.SubmitButton = Button(self.loginframe , image=self.Submit_image , border = 0  , command = logincheck)
         self.SubmitButton.place(x = 350 , y = 200)
 
 
-    def thehompage(self):
-        self.newWindow = Toplevel(self.master)
-        self.app = HOMEPAGE(self.newWindow)
+
+
 
 class signupWindow(HOMEPAGE):
     def __init__(self , master):
@@ -92,19 +150,88 @@ class signupWindow(HOMEPAGE):
         self.loginframe = Frame(self.master , width = 1000 , bg = "#fce4ec",  height = 1000 , relief = 'ridge' , bd = 2)
         self.loginframe.place(x=150 , y=120)
 
-       
-        self.fieldsUsername = AnyName(self.loginframe ,"./IMAGE/username-icon.jpg" , "Username : " ,50 , 50 , 350 , 70 , "NULL")
+        def details_stored():
+
+            #THIS IS FOR CREATING THE TABLE FOR USER SIGNUP DETAILS.
+            # my_cursor.execute("""CREATE TABLE USER_DETAILS (
+            #                         userid INT AUTO_INCREMENT PRIMARY KEY,
+            #                         username VARCHAR(200) NOT NULL, 
+            #                         firstname VARCHAR(200) NOT NULL,
+            #                         lastname VARCHAR(200) NOT NULL, 
+            #                         email VARCHAR(200) NOT NULL, 
+            #                         password VARCHAR(200) NOT NULL,
+            #                         DOB DATE NOT NULL
+            #                         )""")
+
+            def fieldchecker(n):
+                if n == "" or n ==" ":
+                    return 1
 
 
-        self.fieldsFirstName = AnyName(self.loginframe ,"./IMAGE/username-icon.jpg" , "Firstname : " ,50 , 120 , 350 , 140 , "NULL")
+            usernamevalue = self.UserNameEntry.get()
+            firstnamevalue = self.FirstNameEntry.get()
+            lastnamevalue = self.LastNameEntry.get()
+            emailvalue = self.EmailNameEntry.get()
+            passwordvalue =self.PasswordNameEntry.get()
+
+            u = fieldchecker(usernamevalue)
+            f =fieldchecker(firstnamevalue) 
+            l = fieldchecker(lastnamevalue)
+            e =fieldchecker(emailvalue)
+            p =fieldchecker(passwordvalue)
+
+            if u == 1 or f == 1 or l == 1 or e == 1 or p ==1 :
+                messagebox.showwarning("ERROR!" , "Fill all spaces....")
+                master.destroy()
+            
+            else:
+                #INSERTING INTO DATABASE .
+
+                mb=mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="Nana#773_9z",
+                database="hotel"
+                )
+                my_cursor = mb.cursor()
+                s = "INSERT INTO user_details(username ,firstname ,lastname , email , password , DOB) VALUES(%s , %s , %s , %s , %s , %s)"
+                data = (f"{self.UserNameEntry.get()}",f"{self.FirstNameEntry.get()}" ,  f"{self.LastNameEntry.get()}" , f"{self.EmailNameEntry.get()}" ,f"{self.PasswordNameEntry.get()}" ,f"{self.year.get()}-{self.month.get()}-{self.day.get()}" )
+                my_cursor.execute(s,data)
+                mb.commit()
+                mb.close()
+
+                messagebox.showinfo("SAVED!" , "Your Details Has Been Saved Successfully.")
+
+                #Closing the SignUp Window after all details has been saved 
+                master.destroy()
 
 
-        self.fieldsLastName = AnyName(self.loginframe ,"./IMAGE/username-icon.jpg" , "Lastname : " ,50 , 200 , 350 , 220 , "NULL")
-        
-        self.fieldsEmail = AnyName(self.loginframe ,"./IMAGE/email.jpg" , "Email : " ,50 , 280 , 350 , 300 , "NULL")
-        
-        self.fieldspassword = AnyName(self.loginframe ,"./IMAGE/passwordImage.png" , "Password : " ,50 , 360 , 350 , 380 , "*")
-        
+
+
+        u_name = StringVar()
+        self.fieldsUsername = AnyName(self.loginframe ,"./IMAGE/username-icon.jpg" , "Username : " ,50 , 50 )
+        self.UserNameEntry = Entry(self.loginframe ,textvariable = u_name , width = 50  , bd = 2 , font = ('Arial' , 14 , "italic" )  )
+        self.UserNameEntry.place(x = 350 , y = 70)
+
+        f_name = StringVar()
+        self.fieldsFirstName = AnyName(self.loginframe ,"./IMAGE/username-icon.jpg" , "Firstname : " ,50 , 120 )
+        self.FirstNameEntry = Entry(self.loginframe ,textvariable = f_name , width = 50  , bd = 2 , font = ('Arial' , 14 , "italic" ) )
+        self.FirstNameEntry.place(x = 350 , y = 140)
+
+        l_name = StringVar()
+        self.fieldsLastName = AnyName(self.loginframe ,"./IMAGE/username-icon.jpg" , "Lastname : " ,50 , 200 )
+        self.LastNameEntry = Entry(self.loginframe ,textvariable = l_name , width = 50  , bd = 2 , font = ('Arial' , 14 , "italic" ) )
+        self.LastNameEntry.place(x = 350 , y = 220)
+
+        mail = StringVar()
+        self.fieldsEmail = AnyName(self.loginframe ,"./IMAGE/email.jpg" , "Email : " ,50 , 280 )
+        self.EmailNameEntry = Entry(self.loginframe ,textvariable = mail , width = 50  , bd = 2 , font = ('Arial' , 14 , "italic" ) )
+        self.EmailNameEntry.place(x = 350 , y = 300)
+
+        u_password = StringVar()
+        self.fieldspassword = AnyName(self.loginframe ,"./IMAGE/passwordImage.png" , "Password : " ,50 , 360 )
+        self.PasswordNameEntry = Entry(self.loginframe ,textvariable = u_password , width = 50  , bd = 2 , font = ('Arial' , 14 , "italic" ) , show = "*")
+        self.PasswordNameEntry.place(x = 350 , y = 380)
 
         self.date_image = ImageTk.PhotoImage(Image.open("./IMAGE/DateImage.jpg"))
         self.DateLabel = Label(self.loginframe ,image =self.date_image , text = "Date O/B: ",font = ('CHARLESWORTH' , 35 ) , compound = LEFT , bg ="#fce4ec" )
@@ -135,16 +262,14 @@ class signupWindow(HOMEPAGE):
 
         years = dropdownRange(1980,2005)
         self.year =IntVar()
-        self.year.set(months[0])
+        self.year.set("1990")
         self.DateDay = OptionMenu(self.loginframe , self.year,*years ).place(x=550 , y=460)
 
-        def details_stored():
-            messagebox.showinfo("SAVED!" , "Your Details Has Been Saved Successfully.")
-            master.destroy()
+        
 
 
         self.Submit_image = ImageTk.PhotoImage(Image.open("./IMAGE/Submit.jpg"))
-        self.SubmitButton = Button(self.loginframe, image=self.Submit_image , border = 0  , command = details_stored)
+        self.SubmitButton = Button(self.loginframe, image=self.Submit_image , border = 0 , command = details_stored )
         self.SubmitButton.place(x = 350 , y = 520)
 
 
@@ -158,17 +283,14 @@ class signupWindow(HOMEPAGE):
 
 
 class AnyName(Tk):
-    def __init__(self,master,path ,fieldtext , Lx , Ly ,Ex , Ey , theshow):
+    def __init__(self,master,path ,fieldtext , Lx , Ly):
         self.loginframe = master 
-        global name_var
-        name_var = StringVar()
         self.username_image = ImageTk.PhotoImage(Image.open(path))
         self.UserNameLabel = Label(self.loginframe ,image =self.username_image , text =fieldtext ,font = ('CHARLESWORTH' , 35 ) , compound = LEFT , bg ="#fce4ec" )
         self.UserNameLabel.place(x=Lx , y=Ly)
-        self.UserNameEntry = Entry(self.loginframe ,textvariable = name_var , width = 50  , bd = 2 , font = ('Arial' , 14 , "italic" ) , show = theshow ,  )
-        self.UserNameEntry.place(x = Ex , y = Ey)
+        
 
-
+#THis is a test version
 
 d = HOMEPAGE(root)
 

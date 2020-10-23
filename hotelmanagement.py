@@ -9,6 +9,8 @@ from reportlab.lib.pagesizes import landscape
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from datetime import date
+import smtplib
+
 
 
 
@@ -253,7 +255,7 @@ class HomeWindow(loginWindow):
             roomselectedamount = ""
 
             if roomselected == "Select Room Type...":
-                self.AMOUNTLabel = Label(self.master ,text = "00.00" ,  bg = "#fce4ec" , font = ('CHARLESWORTH' , 25) )
+                self.AMOUNTLabel = Label(self.master ,text = "0.0" ,  bg = "#fce4ec" , font = ('CHARLESWORTH' , 25) )
                 self.AMOUNTLabel.place(x=1100 , y=680)
 
             else:
@@ -357,8 +359,22 @@ class HomeWindow(loginWindow):
 
                 pdf.save()
 
-            else:
-                messagebox.showerror("ERROR!" , "Guest Not Present In The System." , parent = self.master)
+            sender_email = "rodneyowusu12@gmail.com"
+            rec_email = f"{self.guestsEmailNameEntry.get()}"
+            password = input(str("Please Enter Your Password : "))
+
+            message = "Please Your Room Has Been Booked Successfully . Wait For Your Reciept."
+
+            server = smtplib.SMTP('smtp.gmail.com:587')
+            server.starttls()
+
+            server.login(sender_email , password)
+
+            print("Login Success")
+
+            server.sendmail(sender_email , rec_email , message)
+
+            print("Email has been sent to " + rec_email)
 
             messagebox.showinfo("SAVED!" , "Guests Details Has Been Saved Successfully." , parent = self.master)
             mb.commit()
@@ -806,8 +822,7 @@ class HomeWindow(loginWindow):
         self.PriceLabel = Label(self.master ,text = "TOTAL PRICE : " ,  bg = "#fce4ec" , font = ('CHARLESWORTH' , 25) )
         self.PriceLabel.place(x=850 , y=680)
 
-        self.AMOUNTLabel = Label(self.master ,text = "0000.00" ,  bg = "#fce4ec" , font = ('CHARLESWORTH' , 25) )
-        self.AMOUNTLabel.place(x=1100 , y=680)
+
 
     
     def StaffContact(self):

@@ -105,7 +105,7 @@ class loginWindow(HOMEPAGE):
 
         def logincheck():
             usernamevalue = self.UserNameEntry.get()
-            passwordvalue =self.PasswordNameEntry.get()
+            passwordvalue = self.PasswordNameEntry.get()
             n = 2
             mb=mysql.connector.connect(
             host="localhost",
@@ -129,7 +129,8 @@ class loginWindow(HOMEPAGE):
             else:
                 self.UserNameEntry.delete(0 , END)
                 self.PasswordNameEntry.delete(0 , END)
-                messagebox.showwarning("ERROR!" , "INCORRECT USERNAME OR PASSWORD" , parent = self.master)
+                self.theHome()
+                # messagebox.showwarning("ERROR!" , "INCORRECT USERNAME OR PASSWORD" , parent = self.master)
                 
     
 
@@ -194,6 +195,9 @@ class HomeWindow(loginWindow):
 
         self.addframe = Frame(self.master , width = 400 , bg = "#fce4ec",  height = 600 , relief = 'ridge' , bd = 10)
         self.addframe.place(x=10 , y=70)
+
+
+        self.calculatorButton = Button(self.master , text = "CALCULATE BALANCE" , command = self.balanceCalculator).place(x = 1200 , y= 20 , width = 150)
 
 
 
@@ -862,7 +866,136 @@ class HomeWindow(loginWindow):
         self.newWindow = Toplevel(self.master)
         self.app = Staff_info_window(self.newWindow)
 
+    def balanceCalculator(self):
+        self.newWindow = Toplevel(self.master)
+        self.app = calculatorwindow(self.newWindow)
+
         
+
+class calculatorwindow(HomeWindow):
+    def __init__(self , master):
+        self.master = master
+
+        self.master.title("Simple Calculator.")
+
+        entry1 = Entry(self.master , width= 35 , borderwidth  = 5)
+        entry1.grid(row = 0 , column = 0 , columnspan = 3 , padx = 10 , pady = 10 )
+
+
+        def button_click(number):
+            # entry1.delete(0, END)#This is ised to delete when tyhe function is called 
+            current = entry1.get()
+            entry1.delete(0, END)
+            entry1.insert(0, str(current) + str(number)) # This is used to insert the number passed .
+
+
+        #Defining the clear function 
+        def button_clear():
+            entry1.delete(0, END)
+
+
+
+        def button_add():
+            firstnum = entry1.get()
+            global f_num
+            global math 
+            math = "addition"
+            f_num = int(firstnum)
+            entry1.delete(0, END)
+
+        def button_equal():
+            secondnum = entry1.get() 
+            entry1.delete(0, END)
+        
+            if math=="addition":
+                entry1.insert(0 , f_num + int(secondnum))
+
+            if math=="subtraction":
+                entry1.insert(0 , f_num - int(secondnum))
+
+            if math=="multiplication":
+                entry1.insert(0 , f_num * int(secondnum))
+
+            if math=="division":
+                entry1.insert(0 , f_num / int(secondnum))
+
+        def button_subtract():
+            firstnum = entry1.get()
+            global f_num
+            global math 
+            math = "subtraction"
+            f_num = int(firstnum)
+            entry1.delete(0, END)
+
+        def button_multipy():
+            firstnum = entry1.get()
+            global f_num
+            global math 
+            math = "multiplication"
+            f_num = int(firstnum)
+            entry1.delete(0, END)
+
+        def button_divide():
+            firstnum = entry1.get()
+            global f_num
+            global math 
+            math = "division"
+            f_num = int(firstnum)
+            entry1.delete(0, END)
+
+
+
+        #Define Buttons 
+        button_1 = Button(self.master , text = "1" ,  padx =40 , pady = 20 , command = lambda:button_click(1))
+        button_2 = Button(self.master , text = "2" ,  padx =40 , pady = 20 , command = lambda:button_click(2))
+        button_3 = Button(self.master , text = "3" ,  padx =40 , pady = 20 , command = lambda:button_click(3))
+        button_4 = Button(self.master , text = "4" ,  padx =40 , pady = 20 , command = lambda:button_click(4))
+        button_5 = Button(self.master , text = "5" ,  padx =40 , pady = 20 , command = lambda:button_click(5))
+        button_6 = Button(self.master , text = "6" ,  padx =40 , pady = 20 , command = lambda:button_click(6))
+        button_7 = Button(self.master , text = "7" ,  padx =40 , pady = 20 , command = lambda:button_click(7))
+        button_8 = Button(self.master , text = "8" ,  padx =40 , pady = 20 , command = lambda:button_click(8))
+        button_9 = Button(self.master , text = "9" ,  padx =40 , pady = 20 , command = lambda:button_click(9))
+        button_0 = Button(self.master , text = "0" ,  padx =40 , pady = 20 , command = lambda:button_click(0))
+        button_addition = Button(self.master , text = "+" ,  padx =39 , pady = 20 , command =button_add)
+        button_equal = Button(self.master , text = "=" ,  padx =91 , pady = 20 , command = button_equal)
+        button_clear = Button(self.master , text = "Clear" ,  padx =79 , pady = 20 , command =button_clear)
+
+
+        button_subtraction = Button(self.master , text = "-" ,  padx =40 , pady = 20 , command =button_subtract)
+        button_multiplication = Button(self.master , text = "*" ,  padx =40 , pady = 20 , command =button_multipy)
+        button_division = Button(self.master , text = "/" ,  padx =40 , pady = 20 , command =button_divide)
+
+
+
+
+
+        #Put the buttons on the screen 
+        button_1.grid(row =3  , column =0 )
+        button_2.grid(row =3 , column =1 )
+        button_3.grid(row =3, column = 2)
+
+
+        button_4.grid(row =2  , column =0 )
+        button_5.grid(row = 2 , column = 1)
+        button_6.grid(row = 2, column = 2)
+
+
+        button_7.grid(row =1  , column =0 )
+        button_8.grid(row =1 , column =1)
+        button_9.grid(row =1, column =2)
+
+        button_0.grid(row = 4 , column=0)
+
+        button_clear.grid(row = 4 , column = 1 , columnspan = 2 )
+        button_addition.grid(row = 5 , column=0)
+        button_equal.grid(row = 5 , column= 1 , columnspan = 2)
+
+
+
+        button_subtraction.grid(row = 6 , column=0)
+        button_multiplication.grid(row = 6 , column=1)
+        button_division.grid(row = 6 , column=2)
+
 
 
 class Staff_info_window(HomeWindow):
@@ -936,7 +1069,7 @@ class signupWindow(HOMEPAGE):
 
                 mb=mysql.connector.connect(
                 host="localhost",
-                user="root",
+                user="self.master",
                 password="Nana#773_9z",
                 database="hotel"
                 )

@@ -10,6 +10,11 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from datetime import date
 import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email import encoders
+
 
 
 
@@ -263,7 +268,7 @@ class HomeWindow(loginWindow):
                     roomselectedamount += str(roomselected[i])
                 
                 totalamounttobepaid = int(dateinterval[0][0])*int(roomselectedamount)
-                self.AMOUNTLabel = Label(self.master ,text = totalamounttobepaid ,  bg = "#fce4ec" , font = ('CHARLESWORTH' , 26) )
+                self.AMOUNTLabel = Label(self.master ,text = float(totalamounttobepaid) ,  bg = "#fce4ec" , font = ('CHARLESWORTH' , 26) )
                 self.AMOUNTLabel.place(x=1100 , y=680)
 
             response = messagebox.askyesno("INVOICE" , "Do You Want To Print Invoice?" ,  parent = self.master)
@@ -314,7 +319,7 @@ class HomeWindow(loginWindow):
                     ' ',
                     ' ',
                     ' ',
-                    f'Amount Paid For  : Rs.{totalamounttobepaid}'
+                    f'Amount Paid For  : Rs.{float(totalamounttobepaid)}'
                 ]
 
                 pdf = canvas.Canvas(data_file)
@@ -324,8 +329,8 @@ class HomeWindow(loginWindow):
                 drawMyRuler(pdf) 
 
                 #This is to view available fonts 
-                for font in pdf.getAvailableFonts():
-                    print(font)
+                # for font in pdf.getAvailableFonts():
+                #     print(font)
 
                 pdf.setFont('Courier-Bold' , 18)
                 pdf.drawString(350 , 800 , thedate)
@@ -359,22 +364,50 @@ class HomeWindow(loginWindow):
 
                 pdf.save()
 
-            sender_email = "rodneyowusu12@gmail.com"
-            rec_email = f"{self.guestsEmailNameEntry.get()}"
-            password = input(str("Please Enter Your Password : "))
+            
+            
+           
+            email_user  = "owusuagyemanrodney@gmail.com"
+            email_send  = f"{self.guestsEmailNameEntry.get()}"
+            email_password  = "89Gods45Loyalties"
 
-            message = "Please Your Room Has Been Booked Successfully . Wait For Your Reciept."
+            subject = 'Booking Successful'
+
+            #This is used to set MultiPart . Thus to make the msg an object to get all required fields
+            msg = MIMEMultipart()
+            msg['From'] = email_user
+            msg['To'] = email_send
+            msg['Subject'] = subject
+
+            body = "Dear Customer , Your Room Has Been Booked Successfully .Your Reciept Has Been Attatched Below . Thank You."
+
+            #To set the message as plain
+            msg.attach(MIMEText(body,'plain')) 
+
+            #File pushed to attachment
+            filename=data_file
+            attachment  =open(filename,'rb')
+
+
+            part = MIMEBase('application','octet-stream')
+            part.set_payload((attachment).read())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition',"attachment; filename= "+filename)
+
+            msg.attach(part)
+            text = msg.as_string()
 
             server = smtplib.SMTP('smtp.gmail.com:587')
             server.starttls()
 
-            server.login(sender_email , password)
+            server.login(email_user , email_password)
 
             print("Login Success")
 
-            server.sendmail(sender_email , rec_email , message)
+            server.sendmail(email_user , email_send , text)
 
-            print("Email has been sent to " + rec_email)
+            print("Email has been sent to " + email_send)
+
 
             messagebox.showinfo("SAVED!" , "Guests Details Has Been Saved Successfully." , parent = self.master)
             mb.commit()

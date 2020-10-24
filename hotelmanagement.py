@@ -639,7 +639,7 @@ class HomeWindow(loginWindow):
         self.contactFrame = Frame(self.master , width = 400 , bg = "#fce4ec",  height = 70 , relief = 'ridge' , bd = 10)
         self.contactFrame.place(x=10 , y=670)
 
-        self.ContactButton = Button(self.contactFrame , text = "CONTACT MASTER !!" , command =  self.StaffContact).place(y=0 , x=0, width=380 , height = 50)
+        self.ContactButton = Button(self.contactFrame , text = "CONTACT STAFF !!" , command =  self.StaffContact).place(y=0 , x=0, width=380 , height = 50)
 
         self.editframe = Frame(self.master , width = 400 , bg = "#fce4ec",  height = 670 , relief = 'ridge' , bd = 10)
         self.editframe.place(x=410 , y=70)
@@ -696,7 +696,7 @@ class HomeWindow(loginWindow):
         roomlist = roomoptions
         self.updateroomtype = StringVar()
         self.updateroomtype.set("Select Room Type...")
-        self.RoomDropdown= OptionMenu(self.updateframe ,self.updateroomtype,*roomlist ).place(x = 170 , y = 385 , width = 200)
+        self.RoomDropdown= OptionMenu(self.updateframe ,self.updateroomtype,*roomlist).place(x = 170 , y = 385 , width = 200)
 
 
         self.depatureDate = HomeForms(self.updateframe ,"Depature :" , 10 , 445 )
@@ -1069,7 +1069,7 @@ class signupWindow(HOMEPAGE):
 
                 mb=mysql.connector.connect(
                 host="localhost",
-                user="self.master",
+                user="root",
                 password="Nana#773_9z",
                 database="hotel"
                 )
